@@ -1,0 +1,13 @@
+<h1>Job Applications</h1>
+<a href="{% url 'job-add' %}">Add New</a>
+<ul>
+  {% for job in jobs %}
+    <li>
+      {{ job.company_name }} - {{ job.job_title }} ({{ job.status }})
+      [<a href="{% url 'job-edit' job.id %}">Edit</a>]
+      [<a href="{% url 'job-delete' job.id %}">Delete</a>]
+    </li>
+  {% empty %}
+    <li>No job applications found.</li>
+  {% endfor %}
+</ul>
