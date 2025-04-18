@@ -1,10 +1,127 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2 class="text-xl font-semibold mb-4">{{ title }}</h2>
-  <form method="post" enctype="multipart/form-data" class="space-y-4">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save</button>
-    <a href="{% url 'job-list' %}" class="text-gray-600 ml-4">Back</a>
-  </form>
+<div class="bg-white shadow-sm rounded-xl p-6 border border-gray-100">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">{{ title }}</h2>
+        <p class="text-gray-600 mt-1">Fill in the job application details below.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Company Information -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <i class="fas fa-building mr-2 text-blue-500"></i>
+                Company Information
+            </h3>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                    <label for="{{ form.company_name.id_for_label }}" class="block text-sm font-medium text-gray-700">Company Name</label>
+                    {{ form.company_name }}
+                    {% if form.company_name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.company_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.job_title.id_for_label }}" class="block text-sm font-medium text-gray-700">Job Title</label>
+                    {{ form.job_title }}
+                    {% if form.job_title.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.job_title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.location.id_for_label }}" class="block text-sm font-medium text-gray-700">Location</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.location.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.application_date.id_for_label }}" class="block text-sm font-medium text-gray-700">Application Date</label>
+                    {{ form.application_date }}
+                    {% if form.application_date.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.application_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Status -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <i class="fas fa-tasks mr-2 text-blue-500"></i>
+                Application Status
+            </h3>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                    <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">Current Status</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.resume.id_for_label }}" class="block text-sm font-medium text-gray-700">Resume</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors duration-200">
+                        <div class="space-y-1 text-center">
+                            <i class="fas fa-file-upload text-gray-400 text-3xl mb-3"></i>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="{{ form.resume.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                                    <span>Upload a file</span>
+                                    {{ form.resume }}
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PDF, DOC, DOCX up to 10MB</p>
+                        </div>
+                    </div>
+                    {% if form.resume.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.resume.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                Additional Information
+            </h3>
+            <div class="space-y-6">
+                <div>
+                    <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700">Notes</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.link.id_for_label }}" class="block text-sm font-medium text-gray-700">Job Posting Link</label>
+                    {{ form.link }}
+                    {% if form.link.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.link.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4 pt-4">
+            <a href="{% url 'job-list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                <i class="fas fa-times mr-2"></i>
+                Cancel
+            </a>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm">
+                <i class="fas fa-save mr-2"></i>
+                Save Application
+            </button>
+        </div>
+    </form>
+</div>
 {% endblock %}
