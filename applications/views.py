@@ -62,6 +62,29 @@ def job_list(request):
         status: all_jobs.filter(status=status).count()
         for status, _ in JobApplication.STATUS_CHOICES
     }
+
+    # Prepare chart data
+    chart_data = {
+        'labels': [label for _, label in JobApplication.STATUS_CHOICES],
+        'datasets': [{
+            'data': [status_counts[status] for status, _ in JobApplication.STATUS_CHOICES],
+            'backgroundColor': [
+                'rgb(59, 130, 246)',   # blue-500 for Applied
+                'rgb(234, 179, 8)',    # yellow-500 for Interview
+                'rgb(34, 197, 94)',    # green-500 for Offer
+                'rgb(239, 68, 68)',    # red-500 for Rejected
+                'rgb(168, 85, 247)',   # purple-500 for Accepted
+            ],
+            'borderColor': [
+                'rgb(29, 78, 216)',    # blue-700
+                'rgb(161, 98, 7)',     # yellow-700
+                'rgb(21, 128, 61)',    # green-700
+                'rgb(185, 28, 28)',    # red-700
+                'rgb(126, 34, 206)',   # purple-700
+            ],
+            'borderWidth': 1
+        }]
+    }
     
     context = {
         'jobs': jobs,
@@ -70,6 +93,7 @@ def job_list(request):
         'current_status': status_filter,
         'current_sort': sort_by,
         'total_count': all_jobs.count(),
+        'chart_data': chart_data,
     }
     return render(request, 'applications/list.html', context)
 
