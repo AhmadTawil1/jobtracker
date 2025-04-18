@@ -9,10 +9,37 @@
                 <h1 class="text-2xl font-bold text-gray-800">Your Job Applications</h1>
                 <p class="text-gray-600 mt-1">Track and manage your job search progress</p>
             </div>
-            <a href="{% url 'job-add' %}" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm">
-                <i class="fas fa-plus mr-2"></i>
-                Add New Application
-            </a>
+            <div class="flex items-center space-x-4">
+                <!-- Status Filter Dropdown -->
+                <div class="relative">
+                    <button id="filterDropdown" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <i class="fas fa-filter mr-2"></i>
+                        {% if current_status %}
+                            {{ status_choices|get_item:current_status }}
+                        {% else %}
+                            Filter by Status
+                        {% endif %}
+                    </button>
+                    <div id="filterMenu" class="hidden absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10">
+                        <div class="py-1">
+                            <a href="{% url 'job-list' %}" class="{% if not current_status %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                All Applications ({{ total_count }})
+                            </a>
+                        </div>
+                        <div class="py-1">
+                            {% for status, label in status_choices.items %}
+                            <a href="?status={{ status }}" class="{% if current_status == status %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                {{ label }} ({{ status_counts|get_item:status }})
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'job-add' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-sm">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add New Application
+                </a>
+            </div>
         </div>
         
         <!-- Stats Overview -->
@@ -24,7 +51,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Applied</p>
-                        <p class="text-2xl font-bold text-blue-700">{{ jobs|filter_status:"applied"|length }}</p>
+                        <p class="text-2xl font-bold text-blue-700">{{ status_counts|get_item:'applied' }}</p>
                     </div>
                 </div>
             </div>
@@ -35,7 +62,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Interviews</p>
-                        <p class="text-2xl font-bold text-yellow-700">{{ jobs|filter_status:"interview"|length }}</p>
+                        <p class="text-2xl font-bold text-yellow-700">{{ status_counts|get_item:'interview' }}</p>
                     </div>
                 </div>
             </div>
@@ -46,7 +73,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Offers</p>
-                        <p class="text-2xl font-bold text-green-700">{{ jobs|filter_status:"offer"|length }}</p>
+                        <p class="text-2xl font-bold text-green-700">{{ status_counts|get_item:'offer' }}</p>
                     </div>
                 </div>
             </div>
@@ -57,7 +84,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">Accepted</p>
-                        <p class="text-2xl font-bold text-purple-700">{{ jobs|filter_status:"accepted"|length }}</p>
+                        <p class="text-2xl font-bold text-purple-700">{{ status_counts|get_item:'accepted' }}</p>
                     </div>
                 </div>
             </div>
@@ -68,13 +95,74 @@
     <div class="bg-white shadow-sm rounded-xl p-6 border border-gray-100">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-semibold text-gray-800">All Applications</h2>
-            <div class="flex space-x-2">
-                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
-                    <i class="fas fa-sort-amount-down mr-1"></i> Sort
-                </button>
-                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
-                    <i class="fas fa-filter mr-1"></i> Filter
-                </button>
+            <div class="flex items-center space-x-3">
+                <!-- Sort Dropdown -->
+                <div class="relative">
+                    <button id="sortDropdown" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <i class="fas fa-sort-amount-down mr-2"></i>
+                        Sort
+                    </button>
+                    <div id="sortMenu" class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10">
+                        <div class="py-1">
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=date" class="{% if current_sort == 'date' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Date (Oldest first)
+                            </a>
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=-date" class="{% if current_sort == '-date' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Date (Newest first)
+                            </a>
+                        </div>
+                        <div class="py-1">
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=company" class="{% if current_sort == 'company' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Company (A-Z)
+                            </a>
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=-company" class="{% if current_sort == '-company' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Company (Z-A)
+                            </a>
+                        </div>
+                        <div class="py-1">
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=title" class="{% if current_sort == 'title' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Job Title (A-Z)
+                            </a>
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=-title" class="{% if current_sort == '-title' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Job Title (Z-A)
+                            </a>
+                        </div>
+                        <div class="py-1">
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=status" class="{% if current_sort == 'status' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Status (A-Z)
+                            </a>
+                            <a href="?{% if current_status %}status={{ current_status }}&{% endif %}sort=-status" class="{% if current_sort == '-status' %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                Status (Z-A)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Dropdown -->
+                <div class="relative">
+                    <button id="filterDropdown" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        <i class="fas fa-filter mr-2"></i>
+                        {% if current_status %}
+                            {{ status_choices|get_item:current_status }}
+                        {% else %}
+                            Filter
+                        {% endif %}
+                    </button>
+                    <div id="filterMenu" class="hidden absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10">
+                        <div class="py-1">
+                            <a href="?{% if current_sort %}sort={{ current_sort }}{% endif %}" class="{% if not current_status %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                All Applications ({{ total_count }})
+                            </a>
+                        </div>
+                        <div class="py-1">
+                            {% for status, label in status_choices.items %}
+                            <a href="?status={{ status }}{% if current_sort %}&sort={{ current_sort }}{% endif %}" class="{% if current_status == status %}bg-gray-100 text-gray-900{% else %}text-gray-700 hover:bg-gray-50{% endif %} block px-4 py-2 text-sm">
+                                {{ label }} ({{ status_counts|get_item:status }})
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -163,4 +251,36 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    // Handle Sort Dropdown
+    const sortDropdown = document.getElementById('sortDropdown');
+    const sortMenu = document.getElementById('sortMenu');
+
+    sortDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortMenu.classList.toggle('hidden');
+        filterMenu.classList.add('hidden'); // Close filter menu if open
+    });
+
+    // Handle Filter Dropdown
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterMenu = document.getElementById('filterMenu');
+
+    filterDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterMenu.classList.toggle('hidden');
+        sortMenu.classList.add('hidden'); // Close sort menu if open
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+        sortMenu.classList.add('hidden');
+        filterMenu.classList.add('hidden');
+    });
+
+    // Prevent closing when clicking inside menus
+    sortMenu.addEventListener('click', (e) => e.stopPropagation());
+    filterMenu.addEventListener('click', (e) => e.stopPropagation());
+</script>
 {% endblock %}

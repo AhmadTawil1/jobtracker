@@ -26,4 +26,19 @@ def days_until_application(application_date):
     elif days_left == 0:
         return "Due today"
     else:
-        return f"{days_left} days left" 
+        return f"{days_left} days left"
+
+@register.filter
+def is_due_soon(application_date):
+    """Check if application is due within 7 days"""
+    if not application_date:
+        return False
+        
+    today = timezone.now().date()
+    days_left = (application_date - today).days
+    return 0 <= days_left <= 7
+
+@register.filter
+def get_item(dictionary, key):
+    """Get an item from a dictionary using bracket notation"""
+    return dictionary.get(key, 0) 
