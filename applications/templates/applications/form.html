@@ -47,6 +47,15 @@
                         <p class="mt-1 text-sm text-red-600">{{ form.application_date.errors.0 }}</p>
                     {% endif %}
                 </div>
+
+                <div>
+                    <label for="{{ form.due_date.id_for_label }}" class="block text-sm font-medium text-gray-700">Application Deadline</label>
+                    {{ form.due_date }}
+                    {% if form.due_date.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.due_date.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">{{ form.due_date.help_text }}</p>
+                </div>
             </div>
         </div>
 
