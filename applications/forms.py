@@ -4,7 +4,7 @@ from .models import JobApplication
 class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
-        fields = ['company_name', 'job_title', 'location', 'application_date', 'status', 'resume', 'notes', 'link']
+        exclude = ['user']
         widgets = {
             'company_name': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}),
             'job_title': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}),

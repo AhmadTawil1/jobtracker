@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class JobApplication(models.Model):
     STATUS_CHOICES = [
@@ -9,6 +10,7 @@ class JobApplication(models.Model):
         ('accepted', 'Accepted'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='job_applications', null=True)
     company_name = models.CharField(max_length=100)
     job_title = models.CharField(max_length=100)
     location = models.CharField(max_length=100, blank=True)

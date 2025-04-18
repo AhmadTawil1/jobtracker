@@ -126,3 +126,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'job-list'
 LOGOUT_REDIRECT_URL = 'login'
 
+ALLOWED_HOSTS = ['*']
+
+
