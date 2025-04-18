@@ -1,13 +1,25 @@
-<h1>Job Applications</h1>
-<a href="{% url 'job-add' %}">Add New</a>
-<ul>
-  {% for job in jobs %}
-    <li>
-      {{ job.company_name }} - {{ job.job_title }} ({{ job.status }})
-      [<a href="{% url 'job-edit' job.id %}">Edit</a>]
-      [<a href="{% url 'job-delete' job.id %}">Delete</a>]
-    </li>
-  {% empty %}
-    <li>No job applications found.</li>
-  {% endfor %}
-</ul>
+{% extends "base.html" %}
+{% block content %}
+  <div class="mb-4 text-right">
+    <a href="{% url 'job-add' %}" class="bg-blue-500 text-white px-4 py-2 rounded">+ Add Job</a>
+  </div>
+
+  <ul class="space-y-3">
+    {% for job in jobs %}
+      <li class="bg-white shadow p-4 rounded">
+        <div class="flex justify-between items-center">
+          <div>
+            <strong>{{ job.company_name }}</strong> - {{ job.job_title }}
+            <span class="text-sm text-gray-500">({{ job.status }})</span>
+          </div>
+          <div class="space-x-2">
+            <a href="{% url 'job-edit' job.id %}" class="text-blue-500">Edit</a>
+            <a href="{% url 'job-delete' job.id %}" class="text-red-500">Delete</a>
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <li>No job applications found.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

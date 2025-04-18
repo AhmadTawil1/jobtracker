@@ -1,6 +1,10 @@
-<h1>Are you sure you want to delete "{{ job }}"?</h1>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Yes, delete</button>
-</form>
-<a href="{% url 'job-list' %}">Cancel</a>
+{% extends "base.html" %}
+{% block content %}
+  <h2 class="text-xl font-semibold mb-4 text-red-600">Confirm Delete</h2>
+  <p>Are you sure you want to delete "<strong>{{ job }}</strong>"?</p>
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+    <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Yes, delete</button>
+    <a href="{% url 'job-list' %}" class="text-gray-600 ml-4">Cancel</a>
+  </form>
+{% endblock %}
