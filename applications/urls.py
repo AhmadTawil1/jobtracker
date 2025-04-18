@@ -12,4 +12,6 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='applications/login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
+
+    path('export/csv/', views.export_jobs_csv, name='export-csv'),
 ]

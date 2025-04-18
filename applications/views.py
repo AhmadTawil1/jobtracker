@@ -6,6 +6,9 @@ from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.http import HttpResponse
+import csv
+from datetime import datetime
 
 
 def register(request):
@@ -100,3 +103,30 @@ def job_delete(request, pk):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+@login_required
+def export_jobs_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="job_applications_{datetime.now().strftime("%Y%m%d")}.csv"'
+    
+    # Create CSV writer
+    writer = csv.writer(response)
+    
+    # Write header row
+    writer.writerow(['Company', 'Job Title', 'Status', 'Location', 'Application Date', 'Due Date'])
+    
+    # Get user's jobs with selected fields
+    jobs = JobApplication.objects.filter(user=request.user).order_by('-application_date')
+    
+    # Write data rows
+    for job in jobs:
+        writer.writerow([
+            job.company_name,
+            job.job_title,
+            job.get_status_display(),
+            job.location or '',  # Handle None values
+            job.application_date.strftime('%Y-%m-%d') if job.application_date else '',
+            job.due_date.strftime('%Y-%m-%d') if job.due_date else ''
+        ])
+    
+    return response
