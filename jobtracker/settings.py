@@ -132,4 +132,8 @@ LOGOUT_REDIRECT_URL = 'login'
 
 ALLOWED_HOSTS = ['*']
 
+# Email configuration for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@jobtracker.com'
+
 

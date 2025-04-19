@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Gradient -->
+<div class="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 dark:gradient-dark text-white">
+    <div class="container mx-auto px-6 py-24 md:py-32">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8" data-aos="fade-right">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                    Track Your Job Search Journey
+                </h1>
+                <p class="text-xl md:text-2xl text-blue-100">
+                    Stay organized, never miss deadlines, and land your dream job with JobTracker's powerful application management system.
+                </p>
+                <div class="flex gap-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'job-list' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-600 dark:bg-gray-800 dark:text-white rounded-lg font-semibold shadow-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-300">
+                            <i class="fas fa-chart-line mr-2"></i> Go to Dashboard
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-600 dark:bg-gray-800 dark:text-white rounded-lg font-semibold shadow-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-300">
+                            <i class="fas fa-rocket mr-2"></i> Get Started
+                        </a>
+                        <a href="{% url 'login' %}" class="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 dark:hover:bg-gray-800 transition duration-300">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="hidden md:block" data-aos="fade-left">
+                <!-- Placeholder for dashboard screenshot -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-2xl transform rotate-2">
+                    <div class="bg-gray-200 dark:bg-gray-700 rounded-lg aspect-video flex items-center justify-center">
+                        <i class="fas fa-chart-bar text-6xl text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Use JobTracker Section -->
+<div class="bg-white dark:bg-dark-bg-primary py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-white mb-16" data-aos="fade-up">
+            Why Use JobTracker?
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white dark:bg-dark-bg-secondary p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1 transition duration-300" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-blue-500 dark:text-blue-400 text-4xl mb-4">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Stay Organized</h3>
+                <p class="text-gray-600 dark:text-gray-300">Keep all your job applications, resumes, and deadlines in one centralized dashboard.</p>
+            </div>
+            <div class="bg-white dark:bg-dark-bg-secondary p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1 transition duration-300" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-blue-500 dark:text-blue-400 text-4xl mb-4">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Never Miss Deadlines</h3>
+                <p class="text-gray-600 dark:text-gray-300">Track important dates and get reminders for follow-ups and application deadlines.</p>
+            </div>
+            <div class="bg-white dark:bg-dark-bg-secondary p-8 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1 transition duration-300" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-blue-500 dark:text-blue-400 text-4xl mb-4">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Track Progress</h3>
+                <p class="text-gray-600 dark:text-gray-300">Visualize your job search progress with intuitive charts and analytics.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="bg-gray-50 dark:bg-dark-bg-secondary py-20">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-white mb-16" data-aos="fade-up">
+            Powerful Features
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            {% for feature in features %}
+            <div class="bg-white dark:bg-dark-bg-primary p-8 rounded-xl shadow-md transform hover:scale-105 transition duration-300" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:'100' }}">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">{{ feature.title }}</h3>
+                <p class="text-gray-600 dark:text-gray-300">{{ feature.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 dark:gradient-dark py-16">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-8" data-aos="fade-up">
+            Ready to Streamline Your Job Search?
+        </h2>
+        <div class="flex justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
+            {% if user.is_authenticated %}
+                <a href="{% url 'job-list' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-600 dark:bg-gray-800 dark:text-white rounded-lg font-semibold shadow-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-300">
+                    <i class="fas fa-chart-line mr-2"></i> Go to Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="inline-flex items-center px-8 py-4 bg-white text-blue-600 dark:bg-gray-800 dark:text-white rounded-lg font-semibold shadow-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition duration-300">
+                    <i class="fas fa-rocket mr-2"></i> Get Started Now
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

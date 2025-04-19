@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import JobApplication
-from .forms import JobApplicationForm
+from .forms import JobApplicationForm, CustomUserCreationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
@@ -9,17 +9,47 @@ from django.db.models import Count
 from django.http import HttpResponse
 import csv
 from datetime import datetime
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from django.contrib import messages
 
+
+def send_welcome_email(user):
+    subject = 'Welcome to JobTracker!'
+    html_message = render_to_string('applications/email/welcome_email.html', {
+        'username': user.username
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Send welcome email
+            try:
+                send_welcome_email(user)
+            except Exception as e:
+                # Log the error but don't prevent registration
+                print(f"Failed to send welcome email: {e}")
+            
             login(request, user)
             return redirect('job-list')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'applications/register.html', {'form': form})
 
 @login_required
@@ -154,3 +184,25 @@ def export_jobs_csv(request):
         ])
     
     return response
+
+def home(request):
+    features = [
+        {'title': 'Dashboard', 'description': 'Manage your job applications in one place with an intuitive interface.'},
+        {'title': 'Resume Upload', 'description': 'Upload and manage your resumes easily for each application.'},
+        {'title': 'Export', 'description': 'Export your job application data to CSV for offline analysis.'},
+    ]
+    return render(request, 'applications/home.html', {'features': features})
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data["email"]
+        User = get_user_model()
+        
+        # Check if a user with this email exists
+        if not User.objects.filter(email=email).exists():
+            messages.error(self.request, "No account found with this email address.")
+            return redirect('password_reset')
+        
+        # Add success message
+        messages.success(self.request, "Password reset instructions have been sent to your email address.")
+        return super().form_valid(form)
